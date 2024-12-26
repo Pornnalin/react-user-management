@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Ella Adams",
+      "email": "ella.adams@example.com",
+      "income": 57000
+    },
+    {
+      "id": "2",
+      "name": "Leo Martinez",
+      "email": "leo.martinez@example.com",
+      "income": 48000
+    },
+    {
+      "id": "3",
+      "name": "Isabella Lewis",
+      "email": "isabella.lewis@example.com",
+      "income": 59000
+    },
+    {
+      "id": "4",
+      "name": "Mason Clark",
+      "email": "mason.clark@example.com",
+      "income": 52000
+    },
+    {
+      "id": "336",
+      "name": "dwadwf",
+      "email": "awdawf@gmail.com",
+      "income": 213234
+    }
+  ]
+}
