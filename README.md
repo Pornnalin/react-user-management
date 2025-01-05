@@ -8,4 +8,4 @@ This project is a simple CRUD (Create, Read, Update, Delete) application built w
 - **Update**: Edit user details (name, email, and income).
 - **Delete**: Remove users from the list.
   
-<iframe width="560" height="315" src="https://www.youtube.com/embed/6RQNXRRaGoo?si=X80LE2bDJk0nGzMg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[Watch this video on YouTube]https://youtu.be/6RQNXRRaGoo?si=Xju7fGMlKYqQ7RJd
