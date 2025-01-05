@@ -25,10 +25,8 @@ function ShowUser() {
 
   const handleAnimation = (id) => {
     setDeletingUser(id);
-    setTimeout(() => {
-      deleteUser(id);
-      setDeletingUser(null);
-    }, 400);
+    deleteUser(id);
+    setDeletingUser(null);
   };
   return (
     <>

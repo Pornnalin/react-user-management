@@ -43,7 +43,7 @@ export const UserProvider = ({ children }) => {
     );
     setFilteredUsers(filtered);
     // console.log(filtered);
-  }, [search]);
+  }, [user, search]);
 
   function findMaxPage() {
     const userLength = filteredUsers?.length;
@@ -98,12 +98,14 @@ export const UserProvider = ({ children }) => {
   };
 
   const handleEdit = (id) => {
-    const findId = user.find((item) => item.id === id);
-    setSelectId(findId.id);
-    setIsEdit(true);
-    setName(user[id - 1].name);
-    setEmail(user[id - 1].email);
-    setIncome(user[id - 1].income);
+    const findId = user.find((item) => item.id === String(id));
+    if (findId) {
+      setSelectId(findId.id);
+      setIsEdit(true);
+      setName(findId.name);
+      setEmail(findId.email);
+      setIncome(findId.income);
+    }
   };
 
   const updateUser = async () => {
