@@ -8,5 +8,4 @@ This project is a simple CRUD (Create, Read, Update, Delete) application built w
 - **Update**: Edit user details (name, email, and income).
 - **Delete**: Remove users from the list.
   
-### Live Demo:
-https://react-user-management-five.vercel.app/
+
