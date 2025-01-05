@@ -8,6 +8,5 @@ This project is a simple CRUD (Create, Read, Update, Delete) application built w
 - **Update**: Edit user details (name, email, and income).
 - **Delete**: Remove users from the list.
   
-![Alt Text](https://drive.google.com/uc?id=1XpGLXzRHky8N_JLXXCKPfZ-T2eObuLww)
 
 
