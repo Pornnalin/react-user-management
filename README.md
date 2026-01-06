@@ -1,4 +1,4 @@
-# CRUD Application with React + Vite
+# CRUD Application with React + Vite + Supabase
 
 This project is a simple CRUD (Create, Read, Update, Delete) application built with **React** and **Vite**
 
