@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../supabaseClient.js"; // ตรวจสอบให้แน่ใจว่า path ถูกต้อง
+import { supabase } from "../supabaseClient.js"; 
 
 const UserContext = createContext();
 
@@ -197,3 +197,4 @@ export const UserProvider = ({ children }) => {
 };
 
 export const useUser = () => useContext(UserContext);
+
