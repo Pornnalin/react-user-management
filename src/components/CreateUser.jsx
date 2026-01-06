@@ -11,16 +11,14 @@ function CreateUser() {
     isEmpty,
     setNewIncome,
     newIncome,
-    handleCreate,
+    cancelCreate,
   } = useUser();
-
+  const isInvalid = !newName || !newEmail || !newIncome;
   const inputStyle =
     "w-full bg-slate-900/50 border border-slate-600/50 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all outline-none";
 
   return (
-    // เป็น Card แบบเดียวกับ User แต่มี Input แทน
     <div className="bg-slate-800/80 backdrop-blur-xl border-2 border-dashed border-slate-600 rounded-2xl p-6 animate-fadeIn relative overflow-hidden">
-      {/* Label บอกว่ากำลังสร้าง */}
       <div className="absolute top-0 left-0 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-br-lg uppercase tracking-wider">
         New Member
       </div>
@@ -82,12 +80,18 @@ function CreateUser() {
         <div className="flex gap-2 pt-2">
           <button
             onClick={addUser}
-            className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-lg shadow-emerald-900/20 transition-all flex justify-center items-center gap-1"
+            disabled={isInvalid}
+            className={`flex-1 py-2 text-white rounded-lg shadow-lg transition-all flex justify-center items-center gap-1 
+    ${
+      isInvalid
+        ? "bg-slate-600 opacity-50 cursor-not-allowed"
+        : "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/20"
+    }`}
           >
             <IoCheckmarkCircle size={18} /> Save
           </button>
           <button
-            onClick={handleCreate}
+            onClick={cancelCreate}
             className="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white rounded-lg transition-all flex justify-center items-center gap-1"
           >
             <IoCloseCircle size={18} /> Cancel

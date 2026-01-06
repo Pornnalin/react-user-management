@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../supabaseClient.js"; 
+import { supabase } from "../supabaseClient.js";
 
 const UserContext = createContext();
 
@@ -147,6 +147,12 @@ export const UserProvider = ({ children }) => {
 
   const searchBar = (e) => setSearch(e.target.value);
   const handleCreate = () => setIsCreate((prev) => !prev);
+  const cancelCreate = () => {
+    setNewName("");
+    setNewEmail("");
+    setNewIncome(0);
+    setIsCreate(false);
+  };
   const exitEdit = () => setIsEdit(false);
 
   useEffect(() => {
@@ -173,6 +179,7 @@ export const UserProvider = ({ children }) => {
         deleteUser,
         exitEdit,
         handleCreate,
+        cancelCreate,
         isCreate,
         newName,
         setNewName,
@@ -197,4 +204,3 @@ export const UserProvider = ({ children }) => {
 };
 
 export const useUser = () => useContext(UserContext);
-
