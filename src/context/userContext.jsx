@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { supabase } from "../supabaseClient.js"; // ตรวจสอบให้แน่ใจว่า path ถูกต้อง
 
 const UserContext = createContext();
 
@@ -18,87 +18,53 @@ export const UserProvider = ({ children }) => {
   const [search, setSearch] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
 
+  // Pagination State
   const [current, setCurrent] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [startIndex, setStartIndex] = useState(0);
   const [endIndex, setEndIndex] = useState(5);
 
+  // 1. ดึงข้อมูล (Fetch)
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/users");
-      setUser(res.data);
-      setFilteredUsers(res.data);
-      // console.log(res.data);
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .order("id", { ascending: true });
+
+      if (error) throw error;
+      setUser(data);
+      setFilteredUsers(data);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching users:", error.message);
     }
   };
 
-  useEffect(() => {
-    const filtered = user.filter(
-      (user) =>
-        user.name.toLowerCase().includes(search.toLowerCase()) ||
-        user.email.toLowerCase().includes(search.toLowerCase()) ||
-        user.income.toString().includes(search)
-    );
-    setFilteredUsers(filtered);
-    // console.log(filtered);
-  }, [user, search]);
-
-  function findMaxPage() {
-    const userLength = filteredUsers?.length;
-    const result = Math.ceil(userLength / 5);
-    setMaxPage(result);
-  }
-  const goToNext = () => {
-    if (current < maxPage) {
-      setCurrent((pre) => pre + 1);
-      setStartIndex((prev) => prev + 5);
-      setEndIndex((prev) => prev + 5);
-    }
-  };
-  const goToBack = () => {
-    if (current > 1) {
-      setCurrent((pre) => pre - 1);
-      setStartIndex((prev) => prev - 5);
-      setEndIndex((prev) => prev - 5);
-    }
-  };
-  useEffect(() => {
-    findMaxPage();
-  }, [filteredUsers.length]);
-
-  const searchBar = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-  };
-  const handleCreate = () => {
-    setIsCreate((prev) => !prev);
-  };
+  // 2. เพิ่มข้อมูล (Create)
   const addUser = async (e) => {
     e.preventDefault();
-    const newUser = {
-      id: String(Math.floor(Math.random() * 10000)),
-      name: newName,
-      email: newEmail,
-      income: newIncome,
-    };
     try {
-      const post = await axios.post("http://localhost:3000/users", newUser);
-      setUser([...user, post.data]);
-      setFilteredUsers([...user, post.data]);
+      const { data, error } = await supabase
+        .from("users")
+        .insert([{ name: newName, email: newEmail, income: newIncome }])
+        .select();
+
+      if (error) throw error;
+
+      setUser([...user, data[0]]);
       setNewName("");
       setNewEmail("");
       setNewIncome(0);
       setIsCreate(false);
-      console.log(post);
     } catch (err) {
-      console.error(err);
+      console.error("Error adding user:", err.message);
     }
   };
 
+  // 3. เตรียมแก้ไข (Handle Edit)
   const handleEdit = (id) => {
-    const findId = user.find((item) => item.id === String(id));
+    // Supabase id มักเป็น number ถ้าในฐานข้อมูลตั้งเป็น int
+    const findId = user.find((item) => item.id === id);
     if (findId) {
       setSelectId(findId.id);
       setIsEdit(true);
@@ -108,37 +74,81 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // 4. บันทึกการแก้ไข (Update)
   const updateUser = async () => {
-    const editUser = { id: selectId, name, email, income };
     try {
-      await axios.put(`http://localhost:3000/users/${selectId}`, editUser);
-      setUser((prvUser) =>
-        prvUser.map((user) =>
-          user.id === selectId ? { ...user, name, email, income } : user
-        )
+      const { error } = await supabase
+        .from("users")
+        .update({ name, email, income })
+        .eq("id", selectId);
+
+      if (error) throw error;
+
+      setUser((prev) =>
+        prev.map((u) => (u.id === selectId ? { ...u, name, email, income } : u))
       );
       setIsEdit(false);
       setName("");
       setEmail("");
       setIncome(0);
     } catch (err) {
-      console.error(err);
+      console.error("Error updating user:", err.message);
     }
   };
 
+  // 5. ลบข้อมูล (Delete)
   const deleteUser = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/users/${id}`);
-      const updateUser = user.filter((item) => item.id !== id);
-      setUser(updateUser);
-      await fetchUsers();
+      const { error } = await supabase.from("users").delete().eq("id", id);
+
+      if (error) throw error;
+
+      setUser(user.filter((item) => item.id !== id));
     } catch (err) {
-      console.error(err);
+      console.error("Error deleting user:", err.message);
     }
   };
-  const exitEdit = () => {
-    setIsEdit(false);
+
+  // Logic อื่นๆ (Search/Pagination) คงเดิม
+  useEffect(() => {
+    const filtered = user.filter(
+      (u) =>
+        u.name?.toLowerCase().includes(search.toLowerCase()) ||
+        u.email?.toLowerCase().includes(search.toLowerCase()) ||
+        u.income?.toString().includes(search)
+    );
+    setFilteredUsers(filtered);
+  }, [user, search]);
+
+  function findMaxPage() {
+    const result = Math.ceil(filteredUsers.length / 5);
+    setMaxPage(result || 1);
+  }
+
+  useEffect(() => {
+    findMaxPage();
+  }, [filteredUsers.length]);
+
+  const goToNext = () => {
+    if (current < maxPage) {
+      setCurrent((pre) => pre + 1);
+      setStartIndex((prev) => prev + 5);
+      setEndIndex((prev) => prev + 5);
+    }
   };
+
+  const goToBack = () => {
+    if (current > 1) {
+      setCurrent((pre) => pre - 1);
+      setStartIndex((prev) => prev - 5);
+      setEndIndex((prev) => prev - 5);
+    }
+  };
+
+  const searchBar = (e) => setSearch(e.target.value);
+  const handleCreate = () => setIsCreate((prev) => !prev);
+  const exitEdit = () => setIsEdit(false);
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -185,4 +195,5 @@ export const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
 export const useUser = () => useContext(UserContext);
